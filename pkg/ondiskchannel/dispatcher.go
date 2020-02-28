@@ -21,11 +21,14 @@ import (
 	"time"
 
 	cloudevents "github.com/cloudevents/sdk-go"
+	badger "github.com/dgraph-io/badger"
 	"go.uber.org/zap"
 	"knative.dev/eventing/pkg/channel/multichannelfanout"
 	"knative.dev/eventing/pkg/channel/swappable"
 	"knative.dev/eventing/pkg/kncloudevents"
 )
+
+const DefaultDbLoc = "/tmp/events-cache"
 
 type Dispatcher interface {
 	UpdateConfig(config *multichannelfanout.Config) error
@@ -36,6 +39,7 @@ type OnDiskDispatcher struct {
 	ceClient     cloudevents.Client
 	writeTimeout time.Duration
 	logger       *zap.Logger
+	db           *badger.DB
 }
 
 type OnDiskDispatcherArgs struct {
@@ -44,19 +48,59 @@ type OnDiskDispatcherArgs struct {
 	WriteTimeout time.Duration
 	Handler      *swappable.Handler
 	Logger       *zap.Logger
+	DbLoc        string
 }
 
 func (d *OnDiskDispatcher) UpdateConfig(config *multichannelfanout.Config) error {
 	return d.handler.UpdateConfig(config)
 }
 func (d *OnDiskDispatcher) processAndRetry(ctx context.Context, event cloudevents.Event, resp *cloudevents.EventResponse) error {
+
 	// Write to Badger event:
+	err := d.db.Update(func(txn *badger.Txn) {
+		return txn.Set(event.ID, json.Marshal(event))
+	})
 	err := d.handler.ServeHTTP(ctx, event, resp)
+
+	// attempt one retry
 	if err != nil {
 		err = d.handler.ServeHTTP(ctx, event, resp)
-	} else {
-		// Delete from Badger
 	}
+
+	if err != nil {
+		// Delete from Badger
+		err := d.db.Update(func(txn *badger.Txn) {
+			return txn.Delete(event.ID)
+		})
+	}
+	return err
+}
+
+func (d *OnDiskDispatcher) retryWaiting(ctx context.Context) error {
+	// TODO: make this asynchronous with a reasonable limit on concurrent ops
+	err := d.db.Update(func(txn *badger.Txn) {
+		opts := badger.DefaultIteratorOptions
+		opts.PrefetchSize = 10
+		it := txn.NewIterator(opts)
+		defer it.Close()
+		for it.Rewind(); it.Valid(); it.Next() {
+			item := it.Item()
+			key := item.Key()
+			err := item.Value(func(data []byte) {
+				var event cloudevents.Event
+				err := json.Unmarhsal(data, &event)
+				if err != nil {
+					txn.Delete(key)
+					// TODO: log failed key
+					return err
+				}
+				err = d.handler.ServeHTTP(ctx, event)
+				// TODO: continue retrying in event of a failure
+				txn.Delete(key)
+				return err
+			})
+		}
+	})
 	return err
 }
 
@@ -65,6 +109,9 @@ func (d *OnDiskDispatcher) processAndRetry(ctx context.Context, event cloudevent
 func (d *OnDiskDispatcher) Start(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
+
+	// start off retrying stuff that's already waiting
+	_ = retryWaiting(ctx)
 
 	errCh := make(chan error, 1)
 	go func() {
@@ -97,10 +144,16 @@ func NewDispatcher(args *OnDiskDispatcherArgs) *OnDiskDispatcher {
 		args.Logger.Fatal("failed to create cloudevents client", zap.Error(err))
 	}
 
+	dbloc := args.dbLoc
+	if dbLoc == nil {
+		dbLoc = DefaultDbLoc
+	}
+	db := badger.Open(badger.DefaultOptions(dbLoc))
 	dispatcher := &OnDiskDispatcher{
 		handler:  args.Handler,
 		ceClient: ceClient,
 		logger:   args.Logger,
+		db:       db,
 	}
 
 	return dispatcher
