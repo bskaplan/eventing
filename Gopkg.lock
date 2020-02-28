@@ -1086,7 +1086,7 @@
   revision = "b2ee5b48f68d503cf4c09f34343d59c1345a8bb0"
 
 [[projects]]
-  digest = "1:6026cb42da6cd87a75ef73bea6e7e0acf296975e80cab51703d134909a23e9fa"
+  digest = "1:1fb85b8e92f6f47ca0543bfa10df14c2a7a47e2aa4f1d155f1fad0fac3523f09"
   name = "k8s.io/client-go"
   packages = [
     "discovery",
@@ -1277,6 +1277,8 @@
     "tools/clientcmd/api",
     "tools/clientcmd/api/latest",
     "tools/clientcmd/api/v1",
+    "tools/leaderelection",
+    "tools/leaderelection/resourcelock",
     "tools/metrics",
     "tools/pager",
     "tools/record",
@@ -1372,8 +1374,8 @@
   revision = "8d271d903fe4c290aa361acfb242cff7bcee96f1"
 
 [[projects]]
-  branch = "master"
-  digest = "1:16814131a4f11940f3aaac583cd2189b4d40b68025c241306105a0d47d078bde"
+  branch = "release-0.13"
+  digest = "1:77db7d7e7364e6acb7fe627ddb377f94e5199b020be96aa0e8654cd864db2d7a"
   name = "knative.dev/pkg"
   packages = [
     "apis",
@@ -1427,6 +1429,7 @@
     "injection/sharedmain",
     "kmeta",
     "kmp",
+    "leaderelection",
     "logging",
     "logging/logkey",
     "logging/testing",
@@ -1476,7 +1479,7 @@
     "webhook/resourcesemantics/validation",
   ]
   pruneopts = "T"
-  revision = "3bada55aab374d14436636b9f2aafc1108f5c81a"
+  revision = "2006e107e39eb0e661e4437ba76b16465162689e"
 
 [[projects]]
   branch = "master"
@@ -1487,7 +1490,7 @@
     "tools/dep-collector",
   ]
   pruneopts = "UT"
-  revision = "0a90cb89503890eab3452dac905b54c67c53145f"
+  revision = "908ad6cdb8e4aab96cdf0d94f766db7caf4fe129"
 
 [[projects]]
   digest = "1:8730e0150dfb2b7e173890c8b9868e7a273082ef8e39f4940e3506a481cf895c"
@@ -1631,6 +1634,7 @@
     "knative.dev/pkg/injection/sharedmain",
     "knative.dev/pkg/kmeta",
     "knative.dev/pkg/kmp",
+    "knative.dev/pkg/leaderelection",
     "knative.dev/pkg/logging",
     "knative.dev/pkg/logging/logkey",
     "knative.dev/pkg/logging/testing",
