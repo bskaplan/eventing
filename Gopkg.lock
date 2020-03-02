@@ -50,6 +50,14 @@
   version = "v0.1.1"
 
 [[projects]]
+  branch = "master"
+  digest = "1:4e294375ca7531e11c450ff1e8baf5574abbe0c5b372f8741e3aef2ae9300e69"
+  name = "github.com/AndreasBriese/bbloom"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "46b345b51c9667fcbaad862a370d73bd7aa802b6"
+
+[[projects]]
   digest = "1:a617a9e22960a33f9ed462bed370e54636ebea11ca8cb3fab8ce3f93e527ccce"
   name = "github.com/aws/aws-sdk-go"
   packages = [
@@ -148,6 +156,37 @@
   pruneopts = "NUT"
   revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
   version = "v1.1.1"
+
+[[projects]]
+  digest = "1:0efd873865a73c766fdfcaa62fd71fc953d23c602ce6c83ee1ee30a0fd4fb5e3"
+  name = "github.com/dgraph-io/badger"
+  packages = [
+    ".",
+    "options",
+    "pb",
+    "skl",
+    "table",
+    "y",
+  ]
+  pruneopts = "NUT"
+  revision = "2fa005c9d4bf695277ab5214c1fbce3735b9562a"
+  version = "v1.6.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:8868d6201c0007cdce349700d5626d7f1216beb64c44c893564a439c2d175e88"
+  name = "github.com/dgryski/go-farm"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "a6ae2369ad13dc757768086f0cb902728c7e03e5"
+
+[[projects]]
+  digest = "1:b7ffca49e9cfd3dfb04a8e0a59347708c6f78f68476a32c5e0a0edca5d1b258c"
+  name = "github.com/dustin/go-humanize"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "9f541cc9db5d55bce703bd99987c9d5cb8eea45e"
+  version = "v1.0.0"
 
 [[projects]]
   digest = "1:4304cca260ab815326ca42d9c28fb843342748267034c51963e13f5e54e727d1"
@@ -423,6 +462,28 @@
   pruneopts = "NUT"
   revision = "c12348ce28de40eed0136aa2b644d0ee0650e56c"
   version = "v1.0.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:82d921efdd06e4b160af837eeae468c4d915dbdf71b1a010c9bd1af4a44c9c97"
+  name = "github.com/mmcloughlin/avo"
+  packages = [
+    "attr",
+    "build",
+    "buildtags",
+    "gotypes",
+    "internal/prnt",
+    "internal/stack",
+    "ir",
+    "operand",
+    "pass",
+    "printer",
+    "reg",
+    "src",
+    "x86",
+  ]
+  pruneopts = "NUT"
+  revision = "1859174b627509e988d2473707fdfe7a6d52c6f8"
 
 [[projects]]
   digest = "1:2f42fa12d6911c7b7659738758631bec870b7e9b4c6be5444f963cdcfccc191f"
@@ -1449,6 +1510,7 @@
     "github.com/cloudevents/sdk-go/pkg/cloudevents/client",
     "github.com/cloudevents/sdk-go/pkg/cloudevents/transport/http",
     "github.com/cloudevents/sdk-go/pkg/cloudevents/types",
+    "github.com/dgraph-io/badger",
     "github.com/ghodss/yaml",
     "github.com/golang/protobuf/proto",
     "github.com/golang/protobuf/ptypes",
