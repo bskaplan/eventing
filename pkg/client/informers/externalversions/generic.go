@@ -97,6 +97,8 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Messaging().V1alpha1().Channels().Informer()}, nil
 	case messagingv1alpha1.SchemeGroupVersion.WithResource("inmemorychannels"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Messaging().V1alpha1().InMemoryChannels().Informer()}, nil
+	case messagingv1alpha1.SchemeGroupVersion.WithResource("ondiskchannels"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Messaging().V1alpha1().OnDiskChannels().Informer()}, nil
 	case messagingv1alpha1.SchemeGroupVersion.WithResource("subscriptions"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Messaging().V1alpha1().Subscriptions().Informer()}, nil
 

@@ -22,4 +22,6 @@ type ChannelExpansion interface{}
 
 type InMemoryChannelExpansion interface{}
 
+type OnDiskChannelExpansion interface{}
+
 type SubscriptionExpansion interface{}

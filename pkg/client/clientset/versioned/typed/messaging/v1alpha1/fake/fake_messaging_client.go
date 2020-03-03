@@ -36,6 +36,10 @@ func (c *FakeMessagingV1alpha1) InMemoryChannels(namespace string) v1alpha1.InMe
 	return &FakeInMemoryChannels{c, namespace}
 }
 
+func (c *FakeMessagingV1alpha1) OnDiskChannels(namespace string) v1alpha1.OnDiskChannelInterface {
+	return &FakeOnDiskChannels{c, namespace}
+}
+
 func (c *FakeMessagingV1alpha1) Subscriptions(namespace string) v1alpha1.SubscriptionInterface {
 	return &FakeSubscriptions{c, namespace}
 }
