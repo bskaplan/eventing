@@ -17,6 +17,7 @@ package ondiskchannel
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"time"
 
@@ -57,10 +58,14 @@ func (d *OnDiskDispatcher) UpdateConfig(config *multichannelfanout.Config) error
 func (d *OnDiskDispatcher) processAndRetry(ctx context.Context, event cloudevents.Event, resp *cloudevents.EventResponse) error {
 
 	// Write to Badger event:
-	err := d.db.Update(func(txn *badger.Txn) {
-		return txn.Set(event.ID, json.Marshal(event))
+	err := d.db.Update(func(txn *badger.Txn) error {
+		data, err := json.Marshal(event)
+		if err != nil {
+			return err
+		}
+		return txn.Set([]byte(event.ID()), data)
 	})
-	err := d.handler.ServeHTTP(ctx, event, resp)
+	err = d.handler.ServeHTTP(ctx, event, resp)
 
 	// attempt one retry
 	if err != nil {
@@ -69,8 +74,8 @@ func (d *OnDiskDispatcher) processAndRetry(ctx context.Context, event cloudevent
 
 	if err != nil {
 		// Delete from Badger
-		err := d.db.Update(func(txn *badger.Txn) {
-			return txn.Delete(event.ID)
+		err = d.db.Update(func(txn *badger.Txn) error {
+			return txn.Delete([]byte(event.ID()))
 		})
 	}
 	return err
@@ -78,28 +83,35 @@ func (d *OnDiskDispatcher) processAndRetry(ctx context.Context, event cloudevent
 
 func (d *OnDiskDispatcher) retryWaiting(ctx context.Context) error {
 	// TODO: make this asynchronous with a reasonable limit on concurrent ops
-	err := d.db.Update(func(txn *badger.Txn) {
+	err := d.db.Update(func(txn *badger.Txn) error {
 		opts := badger.DefaultIteratorOptions
 		opts.PrefetchSize = 10
 		it := txn.NewIterator(opts)
 		defer it.Close()
+		var globalErr error
 		for it.Rewind(); it.Valid(); it.Next() {
 			item := it.Item()
 			key := item.Key()
-			err := item.Value(func(data []byte) {
+			err := item.Value(func(data []byte) error {
 				var event cloudevents.Event
-				err := json.Unmarhsal(data, &event)
+				err := json.Unmarshal(data, &event)
 				if err != nil {
 					txn.Delete(key)
 					// TODO: log failed key
 					return err
 				}
-				err = d.handler.ServeHTTP(ctx, event)
+				// we don't do anything with the response
+				response := cloudevents.EventResponse{}
+				err = d.handler.ServeHTTP(ctx, event, &response)
 				// TODO: continue retrying in event of a failure
 				txn.Delete(key)
 				return err
 			})
+			if err != nil && globalErr == nil {
+				globalErr = err
+			}
 		}
+		return globalErr
 	})
 	return err
 }
@@ -111,7 +123,7 @@ func (d *OnDiskDispatcher) Start(ctx context.Context) error {
 	defer cancel()
 
 	// start off retrying stuff that's already waiting
-	_ = retryWaiting(ctx)
+	_ = d.retryWaiting(ctx)
 
 	errCh := make(chan error, 1)
 	go func() {
@@ -144,11 +156,14 @@ func NewDispatcher(args *OnDiskDispatcherArgs) *OnDiskDispatcher {
 		args.Logger.Fatal("failed to create cloudevents client", zap.Error(err))
 	}
 
-	dbloc := args.dbLoc
-	if dbLoc == nil {
+	dbLoc := args.DbLoc
+	if dbLoc == "" {
 		dbLoc = DefaultDbLoc
 	}
-	db := badger.Open(badger.DefaultOptions(dbLoc))
+	db, err := badger.Open(badger.DefaultOptions(dbLoc))
+	if err != nil {
+		args.Logger.Fatal("failed to initialize badger db", zap.Error(err))
+	}
 	dispatcher := &OnDiskDispatcher{
 		handler:  args.Handler,
 		ceClient: ceClient,
