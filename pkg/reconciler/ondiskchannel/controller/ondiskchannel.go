@@ -38,7 +38,7 @@ import (
 	eventingduck "knative.dev/eventing/pkg/apis/duck/v1alpha1"
 	"knative.dev/eventing/pkg/apis/eventing"
 	"knative.dev/eventing/pkg/apis/messaging/v1alpha1"
-	ondiskchannelreconciler "knative.dev/eventing/pkg/client/injection/reconciler/messaging/v1alpha1/inmemorychannel"
+	ondiskchannelreconciler "knative.dev/eventing/pkg/client/injection/reconciler/messaging/v1alpha1/ondiskchannel"
 	listers "knative.dev/eventing/pkg/client/listers/messaging/v1alpha1"
 	"knative.dev/eventing/pkg/logging"
 	"knative.dev/eventing/pkg/reconciler"
@@ -91,6 +91,7 @@ type Reconciler struct {
 	endpointsLister         corev1listers.EndpointsLister
 	serviceAccountLister    corev1listers.ServiceAccountLister
 	roleBindingLister       rbacv1listers.RoleBindingLister
+	persistentVolumeClaimLister corev1listers.PersistentVolumeClaimLister
 }
 
 // Check that our Reconciler implements Interface

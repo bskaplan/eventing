@@ -29,7 +29,7 @@ import (
 	"knative.dev/eventing/pkg/kncloudevents"
 )
 
-const DefaultDbLoc = "/tmp/events-cache"
+const DefaultDbLoc = "/data/events-cache"
 
 type Dispatcher interface {
 	UpdateConfig(config *multichannelfanout.Config) error

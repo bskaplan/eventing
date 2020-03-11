@@ -14,6 +14,7 @@ import (
 	ondiskchannelreconciler "knative.dev/eventing/pkg/client/injection/reconciler/messaging/v1alpha1/ondiskchannel"
 	"knative.dev/pkg/client/injection/kube/informers/apps/v1/statefulset"
 	"knative.dev/pkg/client/injection/kube/informers/core/v1/endpoints"
+	"knative.dev/pkg/client/injection/kube/informers/core/v1/persistentvolumeclaim"
 	"knative.dev/pkg/client/injection/kube/informers/core/v1/service"
 	"knative.dev/pkg/client/injection/kube/informers/core/v1/serviceaccount"
 	"knative.dev/pkg/client/injection/kube/informers/rbac/v1/rolebinding"
@@ -48,6 +49,7 @@ func NewController(
 	endpointsInformer := endpoints.Get(ctx)
 	serviceAccountInformer := serviceaccount.Get(ctx)
 	roleBindingInformer := rolebinding.Get(ctx)
+	persistentVolumeClaimInformer := persistentvolumeclaim.Get(ctx)
 
 	r := &Reconciler{
 		Base: reconciler.NewBase(ctx, controllerAgentName, cmw),
@@ -60,6 +62,7 @@ func NewController(
 		endpointsLister:         endpointsInformer.Lister(),
 		serviceAccountLister:    serviceAccountInformer.Lister(),
 		roleBindingLister:       roleBindingInformer.Lister(),
+		persistentVolumeClaimLister: persistentVolumeClaimInformer.Lister(),
 	}
 
 	env := &envConfig{}
@@ -107,6 +110,10 @@ func NewController(
 		FilterFunc: controller.FilterWithName(dispatcherName),
 		Handler:    controller.HandleAll(grCh),
 	})
+	persistentVolumeClaimInformer.Informer().AddEventHandler(cache.FilteringResourceEventHandler(
+		FilterFunc: conroller.FilterWithName(dispatcherName),
+		Handler: controller.HandleAll(grCh))
+	))
 
 	return impl
 }
