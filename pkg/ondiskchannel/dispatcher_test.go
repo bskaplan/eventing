@@ -39,6 +39,7 @@ func TestNewDispatcher(t *testing.T) {
 		WriteTimeout: 1 * time.Minute,
 		Handler:      sh,
 		Logger:       logger,
+		DbLoc:		  "/tmp/odc-test",
 	}
 
 	d := NewDispatcher(args)
