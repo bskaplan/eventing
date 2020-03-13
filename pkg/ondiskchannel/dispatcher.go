@@ -160,6 +160,7 @@ func NewDispatcher(args *OnDiskDispatcherArgs) *OnDiskDispatcher {
 	if dbLoc == "" {
 		dbLoc = DefaultDbLoc
 	}
+	// TODO: Once knative switches to modules, add support for InMemory mode for testing
 	db, err := badger.Open(badger.DefaultOptions(dbLoc))
 	if err != nil {
 		args.Logger.Fatal("failed to initialize badger db", zap.Error(err))
