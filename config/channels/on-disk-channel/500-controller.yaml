@@ -32,7 +32,7 @@ spec:
       serviceAccountName: odc-controller
       containers:
       - name: controller
-        image: knative.dev/eventing/cmd/in_memory/channel_controller
+        image: knative.dev/eventing/cmd/on_disk/channel_controller
         env:
           - name: CONFIG_LOGGING_NAME
             value: config-logging

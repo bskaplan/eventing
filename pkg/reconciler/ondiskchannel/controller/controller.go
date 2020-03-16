@@ -110,10 +110,10 @@ func NewController(
 		FilterFunc: controller.FilterWithName(dispatcherName),
 		Handler:    controller.HandleAll(grCh),
 	})
-	persistentVolumeClaimInformer.Informer().AddEventHandler(cache.FilteringResourceEventHandler(
-		FilterFunc: conroller.FilterWithName(dispatcherName),
-		Handler: controller.HandleAll(grCh))
-	))
+	persistentVolumeClaimInformer.Informer().AddEventHandler(cache.FilteringResourceEventHandler{
+		FilterFunc: controller.FilterWithName(dispatcherName),
+		Handler: controller.HandleAll(grCh),
+	})
 
 	return impl
 }

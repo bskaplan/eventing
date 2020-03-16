@@ -25,6 +25,7 @@ spec:
     matchLabels: &labels
       messaging.knative.dev/channel: on-disk-channel
       messaging.knative.dev/role: dispatcher
+  serviceName: odc-dispatcher
   template:
     metadata:
       labels: *labels
