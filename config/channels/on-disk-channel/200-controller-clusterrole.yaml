@@ -64,6 +64,7 @@ rules:
       - apps
     resources:
       - deployments
+      - statefulsets
     verbs: *everything
   - apiGroups:
       - apps
@@ -88,6 +89,11 @@ rules:
     verbs:
       - create
       - patch
+  - apiGroups:
+    - ""
+    resources:
+      - persistentvolumeclaims
+    verbs: *everything
   - apiGroups:
       - coordination.k8s.io
     resources:
