@@ -31,6 +31,13 @@ spec:
       labels: *labels
     spec:
       serviceAccountName: odc-dispatcher
+      securityContext:
+      #  runAsUser: 1000
+        fsGroup: 1000
+      volumes:
+        - name: odc-dispatcher-vol
+          persistentVolumeClaim: 
+            claimName: odc-dispatcher-vol
       containers:
       - name: dispatcher
         image: knative.dev/eventing/cmd/on_disk/channel_dispatcher
