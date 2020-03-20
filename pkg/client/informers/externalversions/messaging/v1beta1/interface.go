@@ -28,6 +28,8 @@ type Interface interface {
 	Channels() ChannelInformer
 	// InMemoryChannels returns a InMemoryChannelInformer.
 	InMemoryChannels() InMemoryChannelInformer
+	// OnDiskChannels returns a OnDiskChannelInformer.
+	OnDiskChannels() OnDiskChannelInformer
 	// Subscriptions returns a SubscriptionInformer.
 	Subscriptions() SubscriptionInformer
 }
@@ -51,6 +53,11 @@ func (v *version) Channels() ChannelInformer {
 // InMemoryChannels returns a InMemoryChannelInformer.
 func (v *version) InMemoryChannels() InMemoryChannelInformer {
 	return &inMemoryChannelInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// OnDiskChannels returns a OnDiskChannelInformer.
+func (v *version) OnDiskChannels() OnDiskChannelInformer {
+	return &onDiskChannelInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Subscriptions returns a SubscriptionInformer.

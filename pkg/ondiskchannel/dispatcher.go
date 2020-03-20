@@ -21,7 +21,7 @@ import (
 	"errors"
 	"time"
 
-	cloudevents "github.com/cloudevents/sdk-go"
+	cloudevents "github.com/cloudevents/sdk-go/v1"
 	badger "github.com/dgraph-io/badger"
 	"go.uber.org/zap"
 	"knative.dev/eventing/pkg/channel/multichannelfanout"

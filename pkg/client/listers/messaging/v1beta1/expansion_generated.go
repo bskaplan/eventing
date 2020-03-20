@@ -34,6 +34,14 @@ type InMemoryChannelListerExpansion interface{}
 // InMemoryChannelNamespaceLister.
 type InMemoryChannelNamespaceListerExpansion interface{}
 
+// OnDiskChannelListerExpansion allows custom methods to be added to
+// OnDiskChannelLister.
+type OnDiskChannelListerExpansion interface{}
+
+// OnDiskChannelNamespaceListerExpansion allows custom methods to be added to
+// OnDiskChannelNamespaceLister.
+type OnDiskChannelNamespaceListerExpansion interface{}
+
 // SubscriptionListerExpansion allows custom methods to be added to
 // SubscriptionLister.
 type SubscriptionListerExpansion interface{}

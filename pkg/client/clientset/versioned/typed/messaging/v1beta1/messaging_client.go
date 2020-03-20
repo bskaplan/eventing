@@ -28,6 +28,7 @@ type MessagingV1beta1Interface interface {
 	RESTClient() rest.Interface
 	ChannelsGetter
 	InMemoryChannelsGetter
+	OnDiskChannelsGetter
 	SubscriptionsGetter
 }
 
@@ -42,6 +43,10 @@ func (c *MessagingV1beta1Client) Channels(namespace string) ChannelInterface {
 
 func (c *MessagingV1beta1Client) InMemoryChannels(namespace string) InMemoryChannelInterface {
 	return newInMemoryChannels(c, namespace)
+}
+
+func (c *MessagingV1beta1Client) OnDiskChannels(namespace string) OnDiskChannelInterface {
+	return newOnDiskChannels(c, namespace)
 }
 
 func (c *MessagingV1beta1Client) Subscriptions(namespace string) SubscriptionInterface {
